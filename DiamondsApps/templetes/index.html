@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diamond Price Predictor</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #16213e 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: rgba(20, 25, 45, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 50px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                0 0 60px rgba(100, 150, 255, 0.1);
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            color: #fff;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #fff 0%, #c0c0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .diamond-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { filter: drop-shadow(0 0 5px rgba(200, 200, 255, 0.5)); }
+            50% { filter: drop-shadow(0 0 15px rgba(100, 150, 255, 0.8)); }
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            color: #e0e0ff;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(30, 35, 60, 0.6);
+            border: 2px solid rgba(100, 150, 255, 0.3);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            background: rgba(40, 50, 80, 0.8);
+            border-color: rgba(100, 200, 255, 0.8);
+            box-shadow: 0 0 15px rgba(100, 150, 255, 0.3);
+        }
+        
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .row-2 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+        
+        .row-3 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+        
+        .button-container {
+            text-align: center;
+            margin-top: 35px;
+        }
+        
+        button {
+            padding: 16px 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, #6495ff 0%, #00d4ff 100%);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 30px rgba(100, 150, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.5s ease;
+        }
+        
+        button:hover::before {
+            left: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(100, 150, 255, 0.5);
+        }
+        
+        button:active {
+            transform: translateY(-1px);
+        }
+        
+        .result {
+            margin-top: 40px;
+            padding: 30px;
+            border-radius: 18px;
+            display: none;
+            background: linear-gradient(135deg, rgba(0, 200, 150, 0.15) 0%, rgba(0, 150, 200, 0.15) 100%);
+            border: 2px solid rgba(0, 200, 150, 0.4);
+            animation: resultAppear 0.6s ease-out;
+            box-shadow: 0 10px 30px rgba(0, 200, 150, 0.2);
+        }
+        
+        @keyframes resultAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .result h4 {
+            color: #00ff88;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+        }
+        
+        .price-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+        }
+        
+        #predictedPrice {
+            color: #00ff88;
+            font-weight: 700;
+            font-size: 2.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .diamond-icon {
+                font-size: 2.5rem;
+            }
+            
+            .row-2, .row-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="diamond-icon">💎</div>
+            <h1>Diamond Price Predictor</h1>
+            <p class="subtitle">Discover the value of your diamond</p>
+        </div>
+        
+        <form id="predictionForm">
+            <div class="row row-2">
+                <div class="form-group">
+                    <label for="carat"><i class="fas fa-weight"></i> Carat Weight</label>
+                    <input type="number" step="0.01" id="carat" placeholder="e.g., 1.25" required>
+                </div>
+                <div class="form-group">
+                    <label for="cut"><i class="fas fa-scissors"></i> Cut Quality</label>
+                    <select id="cut" required>
+                        <option value="">Select Cut...</option>
+                        <option value="Fair">Fair</option>
+                        <option value="Good">Good</option>
+                        <option value="Very Good">Very Good</option>
+                        <option value="Premium">Premium</option>
+                        <option value="Ideal">Ideal</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row row-2">
+                <div class="form-group">
+                    <label for="color"><i class="fas fa-palette"></i> Color Grade</label>
+                    <select id="color" required>
+                        <option value="">Select Color...</option>
+                        <option value="D">D - Colorless</option>
+                        <option value="E">E - Colorless</option>
+                        <option value="F">F - Colorless</option>
+                        <option value="G">G - Near Colorless</option>
+                        <option value="H">H - Near Colorless</option>
+                        <option value="I">I - Near Colorless</option>
+                        <option value="J">J - Near Colorless</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="clarity"><i class="fas fa-eye"></i> Clarity Grade</label>
+                    <select id="clarity" required>
+                        <option value="">Select Clarity...</option>
+                        <option value="I1">I1 - Included</option>
+                        <option value="SI2">SI2 - Slightly Included</option>
+                        <option value="SI1">SI1 - Slightly Included</option>
+                        <option value="VS2">VS2 - Very Slightly Included</option>
+                        <option value="VS1">VS1 - Very Slightly Included</option>
+                        <option value="VVS2">VVS2 - Very Very Slightly Included</option>
+                        <option value="VVS1">VVS1 - Very Very Slightly Included</option>
+                        <option value="IF">IF - Internally Flawless</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row row-3">
+                <div class="form-group">
+                    <label for="depth"><i class="fas fa-arrows-alt-v"></i> Depth %</label>
+                    <input type="number" step="0.01" id="depth" placeholder="61.5" required>
+                </div>
+                <div class="form-group">
+                    <label for="table"><i class="fas fa-square"></i> Table %</label>
+                    <input type="number" step="0.01" id="table" placeholder="57.0" required>
+                </div>
+                <div class="form-group">
+                    <label for="x"><i class="fas fa-ruler"></i> Length (mm)</label>
+                    <input type="number" step="0.01" id="x" placeholder="5.73" required>
+                </div>
+            </div>
+            
+            <div class="row row-2">
+                <div class="form-group">
+                    <label for="y"><i class="fas fa-ruler"></i> Width (mm)</label>
+                    <input type="number" step="0.01" id="y" placeholder="5.76" required>
+                </div>
+                <div class="form-group">
+                    <label for="z"><i class="fas fa-cube"></i> Depth (mm)</label>
+                    <input type="number" step="0.01" id="z" placeholder="3.53" required>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <button type="submit">
+                    <i class="fas fa-magic"></i> Calculate Price
+                </button>
+            </div>
+        </form>
+        
+        <div id="result" class="result">
+            <p class="price-label">💎 Estimated Price</p>
+            <h4><i class="fas fa-dollar-sign"></i> <span id="predictedPrice">$0</span></h4>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                carat: parseFloat(document.getElementById('carat').value),
+                cut: document.getElementById('cut').value,
+                color: document.getElementById('color').value,
+                clarity: document.getElementById('clarity').value,
+                depth: parseFloat(document.getElementById('depth').value),
+                table: parseFloat(document.getElementById('table').value),
+                x: parseFloat(document.getElementById('x').value),
+                y: parseFloat(document.getElementById('y').value),
+                z: parseFloat(document.getElementById('z').value)
+            };
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                document.getElementById('predictedPrice').textContent = 
+                    new Intl.NumberFormat('en-US', { 
+                        style: 'currency', 
+                        currency: 'USD',
+                        maximumFractionDigits: 0 
+                    }).format(data.predicted_price);
+                document.getElementById('result').style.display = 'block';
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Tahmin yapılırken bir hata oluştu.');
+            }
+        });
+    </script>
+</body>
+</html>
